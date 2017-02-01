@@ -20,7 +20,7 @@ class boh(
     $db_user = 'boh',
     $db_password = 'boh',
 ) {
-    $settings = $basename + "project/project/settings/${environment}.py"
+    $settings = "${basename}project/project/settings/${environment}.py"
 
     $nginx = $::operatingsystem ? {
         default => 'nginx',
