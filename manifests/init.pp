@@ -4,9 +4,8 @@
 class boh(
     $environment = Enum['dev','prod'],
     $language = Enum['en', 'pt-br'],
-    $db_engine = Enum['sqlite3', 'mysql', 'postgresql', 'oracle'],
     $python_version = Enum['2','3'],
-    $debug = Enum['true', 'false'],
+    $debug = Enum['True', 'False'],
     $create_superuser = Enum['true', 'false'],
     $allowed_hosts = ['localhost', '127.0.0.1'],
     $pkg_url = 'https://github.com/ribeiroit/bag-of-holding/archive/translation.tar.gz',
@@ -21,6 +20,8 @@ class boh(
     $db_user = 'boh',
     $db_password = 'boh',
 ) {
+    $settings = $basename + "project/project/settings/${environment}.py"
+
     $nginx = $::operatingsystem ? {
         default => 'nginx',
     }
@@ -60,6 +61,10 @@ class boh(
         default => 'uwsgi-plugin-python3',
     }
 
+    $mariadb_srv = $::operatingsystem ? {
+        default => 'mariadb-server',
+    }
+
     $mariadb_dev = $::operatingsystem ? {
         default => 'mariadb-devel',
     }
@@ -69,9 +74,11 @@ class boh(
         alias  => 'nginx',
     }
 
-    package { $mariadb_dev:
-        ensure => present,
-        alias  => 'mariadb_dev',
+    if $environment == 'prod' {
+        package { $mariadb_dev:
+            ensure => present,
+            alias  => 'mariadb_dev',
+        }
     }
 
     package { 'gcc':
@@ -157,7 +164,15 @@ class boh(
             require => Exec['boh-install-virtualenv'];
 
         'boh-install-deps':
-            command => "${basename}env/bin/pip${python_version} install -r ${basename}requirements.txt",
+            command => "${basename}env/bin/pip${python_version} install -r ${basename}requirements/${environment}.txt",
             require => Exec['boh-create-env'];
+    }
+
+    file { $settings:
+        ensure  => file,
+        owner   => $user,
+        group   => $user,
+        mode    => '0744',
+        content => template('puppet:///templates/settings.erb'),
     }
 }
