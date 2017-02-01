@@ -21,7 +21,7 @@ INSTALLED_APPS = (
     'django_filters',
     'widget_tweaks',
 
-    <%= if $environment == 'dev' -%>
+    <% if @environment == 'dev' -%>
     'debug_toolbar',
     <% end -%>
 )
