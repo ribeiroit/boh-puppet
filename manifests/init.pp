@@ -173,6 +173,6 @@ class boh(
         owner   => $user,
         group   => $user,
         mode    => '0744',
-        content => template('puppet:///modules/boh/templates/settings.erb'),
+        content => template('boh/settings.erb'),
     }
 }
