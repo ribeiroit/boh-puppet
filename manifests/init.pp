@@ -150,7 +150,7 @@ class boh(
 
     exec {
         'boh-kill':
-            command => "/bin/bash -c \"for i in \$(ps ax|grep python${python_version}|egrep -v grep|tr -s ' '|cut -d' ' -f2); do kill -9 $i;done\"",
+            command => "/bin/bash -c \"for i in \$(ps ax|grep python${python_version}|egrep -v grep|tr -s ' '|cut -d' ' -f2); do kill -9 \$i;done\"",
             require => File[$basename];
 
         'boh-download':
