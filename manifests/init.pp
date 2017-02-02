@@ -217,7 +217,7 @@ class boh(
             require => Exec['boh-makemigrations'];
 
         'boh-makemessages':
-            command => "/bin/cd ${basename}project; ${basename}env/bin/python${python_version} manage.py makemessages -l ${lang['${language}']}",
+            command => "/bin/cd ${basename}project; ${basename}env/bin/python${python_version} manage.py makemessages -l $lang[${language}]",
             require => Exec['boh-migrate'];
 
         'boh-compilemessages':
