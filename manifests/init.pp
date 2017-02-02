@@ -9,7 +9,7 @@ class boh(
     $create_superuser = Enum['true', 'false'],
     $allowed_hosts = ['localhost', '127.0.0.1'],
     $pkg_url = 'https://github.com/ribeiroit/bag-of-holding/archive/translation.tar.gz',
-    $pkg_checksum = '7ddbde7bfedeb34f77894be7a7dea20f',
+    $pkg_checksum = '44d17a1cb2650c8190bd601368a29d38',
     $pkg_name = '/opt/bag-of-holding-translation/',
     $tarball = '/opt/boh.tar.gz',
     $superuser_name = 'admin',
