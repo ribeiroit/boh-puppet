@@ -217,4 +217,14 @@ class boh(
                 require     => Exec['boh-compilemessages'];
         }
     }
+
+    exec {
+        'firewalld-port':
+            command => '/usr/bin/firewall-cmd --zone=public --add-port=8000/tcp --permanent',
+            require => Exec['boh-start'];
+
+        'firewalld-reload':
+            command => '/usr/bin/firewall-cmd --reload',
+            require => Exec['firewalld-port'];
+    }
 }
