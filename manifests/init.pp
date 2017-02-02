@@ -132,14 +132,14 @@ class boh(
         ensure => present,
         shell  => '/bin/false',
         system => true,
-    } ->
+    }
 
     file { $basename:
         ensure  => directory,
         owner   => $user,
         group   => $user,
         mode    => '0744',
-    } ~>
+    }
 
     exec {
         'boh-download':
@@ -168,7 +168,7 @@ class boh(
         'boh-install-deps':
             command => "${basename}env/bin/pip${python_version} install -r ${basename}requirements/${environment}.txt",
             require => Exec['boh-create-env'];
-    } ~>
+    }
 
     file { $settings:
         ensure  => file,
@@ -176,7 +176,7 @@ class boh(
         group   => $user,
         mode    => '0744',
         content => template('boh/settings.erb'),
-    } ~>
+    }
 
     exec {
         'boh-makemigrations':
