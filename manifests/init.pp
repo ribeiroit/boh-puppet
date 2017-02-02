@@ -139,7 +139,7 @@ class boh(
         owner   => $user,
         group   => $user,
         mode    => '0744',
-    }
+    } ->
 
     exec {
         'boh-download':
@@ -168,7 +168,7 @@ class boh(
         'boh-install-deps':
             command => "${basename}env/bin/pip${python_version} install -r ${basename}requirements/${environment}.txt",
             require => Exec['boh-create-env'];
-    }
+    } ->
 
     file { $settings:
         ensure  => file,
@@ -176,7 +176,8 @@ class boh(
         group   => $user,
         mode    => '0744',
         content => template('boh/settings.erb'),
-    }
+        after   => 'boh-install-deps',
+    } ->
 
     exec {
         'boh-makemigrations':
@@ -185,14 +186,11 @@ class boh(
         'boh-migrate':
             command => "${basename}env/bin/python${python_version} ${basename}project/manage.py migrate",
             require => Exec['boh-makemigrations'];
-    }
 
-    if $language != 'en' {
-        exec {
-            'boh-compilemessages':
-                command => "${basename}env/bin/django-admin.py compilemessages",
-        }
-    }
+        'boh-compilemessages':
+            command => "${basename}env/bin/django-admin.py compilemessages",
+            require => Exec['boh-makemigrations'];
+    } ~>
 
     if $environment == 'dev' {
         exec {
