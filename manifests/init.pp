@@ -194,12 +194,26 @@ class boh(
             require => Exec['boh-migrate'];
     }
 
+    file { '/etc/profile.d/boh.sh':
+        ensure  => file,
+        owner   => 'root',
+        group   => 'root',
+        mode    => '0755',
+        content => "export DJANGO_SETTINGS_MODULE='project.settings.${environment}'",
+        alias   => 'boh_env',
+    }
+
+    exec {
+        'boh_env_exec':
+            command => '/etc/profile.d/boh.sh',
+            require => File['boh_env'];
+    }
+
     if $environment == 'dev' {
         exec {
             'boh-start':
-                environment => ["DJANGO_SETTINGS_MODULE='project.settings.${environment}'"],
                 command     => "${basename}env/bin/python${python_version} ${basename}project/manage.py runserver",
-                require     => Exec['boh-compilemessages'];
+                require     => Exec['boh-env-exec'];
         }
     }
 }
