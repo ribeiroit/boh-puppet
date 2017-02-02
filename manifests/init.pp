@@ -180,10 +180,26 @@ class boh(
         require => Exec['boh-install-deps'],
     }
 
+    file { '/etc/profile.d/boh.sh':
+        ensure  => file,
+        owner   => 'root',
+        group   => 'root',
+        mode    => '0755',
+        content => "export DJANGO_SETTINGS_MODULE='project.settings.${environment}'",
+        alias   => 'boh_env',
+        require => File[$settings],
+    }
+
+    exec {
+        'boh-env-exec':
+            command => '/etc/profile.d/boh.sh',
+            require => File['boh_env'];
+    }
+
     exec {
         'boh-makemigrations':
             command => "${basename}env/bin/python${python_version} ${basename}project/manage.py makemigrations",
-            require => File[$settings];
+            require => Exec['boh-env-exec'];
 
         'boh-migrate':
             command => "${basename}env/bin/python${python_version} ${basename}project/manage.py migrate",
@@ -194,26 +210,11 @@ class boh(
             require => Exec['boh-migrate'];
     }
 
-    file { '/etc/profile.d/boh.sh':
-        ensure  => file,
-        owner   => 'root',
-        group   => 'root',
-        mode    => '0755',
-        content => "export DJANGO_SETTINGS_MODULE='project.settings.${environment}'",
-        alias   => 'boh_env',
-    }
-
-    exec {
-        'boh-env-exec':
-            command => '/etc/profile.d/boh.sh',
-            require => File['boh_env'];
-    }
-
     if $environment == 'dev' {
         exec {
             'boh-start':
                 command     => "${basename}env/bin/python${python_version} ${basename}project/manage.py runserver &",
-                require     => Exec['boh-env-exec'];
+                require     => Exec['boh-compilemessages'];
         }
     }
 }
