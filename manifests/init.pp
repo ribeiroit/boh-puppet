@@ -223,7 +223,7 @@ class boh(
     if $create_superuser == 'true' {
         exec {
             'create-superuser':
-                command => "echo \"from django.contrib.auth.models import User; User.objects.create_superuser('${superuser_email}', '${superuser_name}', '${superuser_password}')\" | ${basename}env/bin/python${python_version} ${basename}project/manage.py shell",
+                command => "/bin/echo \"from django.contrib.auth.models import User; User.objects.create_superuser('${superuser_email}', '${superuser_name}', '${superuser_password}')\" | ${basename}env/bin/python${python_version} ${basename}project/manage.py shell",
                 require => Exec['boh-start'];
         }
     }
