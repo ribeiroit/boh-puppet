@@ -213,7 +213,7 @@ class boh(
     if $environment == 'dev' {
         exec {
             'boh-start':
-                command     => "${basename}env/bin/python${python_version} ${basename}project/manage.py runserver &",
+                command     => "${basename}env/bin/python${python_version} ${basename}project/manage.py runserver 0.0.0.0:8000 &",
                 require     => Exec['boh-compilemessages'];
         }
     }
