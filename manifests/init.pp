@@ -209,19 +209,19 @@ class boh(
 
     exec {
         'boh-makemigrations':
-            command => "/bin/cd ${basename}project/;${basename}env/bin/python${python_version} manage.py makemigrations",
+            command => "/bin/cd ${basename}project; ${basename}env/bin/python${python_version} manage.py makemigrations",
             require => Exec['boh-env-exec'];
 
         'boh-migrate':
-            command => "/bin/cd ${basename}project/;${basename}env/bin/python${python_version} manage.py migrate",
+            command => "/bin/cd ${basename}project; ${basename}env/bin/python${python_version} manage.py migrate",
             require => Exec['boh-makemigrations'];
 
         'boh-makemessages':
-            command => "/bin/cd ${basename}project/;${basename}env/bin/python${python_version} manage.py makemessages -l ${lang['${language}']}",
+            command => "/bin/cd ${basename}project; ${basename}env/bin/python${python_version} manage.py makemessages -l ${lang['${language}']}",
             require => Exec['boh-migrate'];
 
         'boh-compilemessages':
-            command => "/bin/cd ${basename}project/;${basename}env/bin/python${python_version} manage.py compilemessages",
+            command => "/bin/cd ${basename}project; ${basename}env/bin/python${python_version} manage.py compilemessages",
             require => Exec['boh-makemessages'];
     }
 
