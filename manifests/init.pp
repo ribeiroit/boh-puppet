@@ -206,7 +206,7 @@ class boh(
             require => Exec['boh-makemigrations'];
 
         'boh-compilemessages':
-            command => "${basename}env/bin/django-admin.py compilemessages",
+            command => "${basename}env/bin/python${python_version} ${basename}project/manage.py compilemessages",
             require => Exec['boh-migrate'];
     }
 
