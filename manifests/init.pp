@@ -146,7 +146,7 @@ class boh(
 
     exec {
         'boh-kill':
-            command => "/bin/bash -c \"pkill python${python_version}\"",
+            command => "/bin/bash -c \"pkill python${python_version}\";echo 0",
             require => File[$basename];
 
         'boh-download':
