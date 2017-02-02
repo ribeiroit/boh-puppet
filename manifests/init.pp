@@ -126,13 +126,13 @@ class boh(
         package { $uwsgi3:
             ensure => present,
         }
-    } ~>
+    }
 
     user { $user:
         ensure => present,
         shell  => '/bin/false',
         system => true,
-    } ~>
+    } ->
 
     file { $basename:
         ensure  => directory,
@@ -191,8 +191,8 @@ class boh(
         exec {
             'boh-compilemessages':
                 command => "${basename}env/bin/django-admin.py compilemessages";
-        }
-    } ~>
+        } ~>
+    }
 
     if $environment == 'dev' {
         exec {
