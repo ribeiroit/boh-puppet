@@ -24,10 +24,6 @@ class boh(
     $db_password = 'boh',
 ) {
     $settings = "${basename}project/project/settings/${environment}.py"
-    $lang = {
-        'en'=> 'en',
-        'pt-br'=> 'pt_BR',
-    }
 
     $nginx = $::operatingsystem ? {
         default => 'nginx',
@@ -217,7 +213,7 @@ class boh(
             require => Exec['boh-makemigrations'];
 
         'boh-makemessages':
-            command => "/bin/cd ${basename}project; ${basename}env/bin/python${python_version} manage.py makemessages -l $lang[${language}]",
+            command => "/bin/cd ${basename}project; ${basename}env/bin/python${python_version} manage.py makemessages",
             require => Exec['boh-migrate'];
 
         'boh-compilemessages':
