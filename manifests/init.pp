@@ -12,6 +12,8 @@ class boh(
     $pkg_checksum = '7ddbde7bfedeb34f77894be7a7dea20f',
     $pkg_name = '/opt/bag-of-holding-translation/',
     $tarball = '/opt/boh.tar.gz',
+    $superuser_name = 'admin',
+    $superuser_email = 'admin@boh.localhost',
     $superuser_password = 'default',
     $domain = 'boh.localhost',
     $basename = '/opt/bag-of-holding/',
@@ -215,6 +217,14 @@ class boh(
             'boh-start':
                 command     => "${basename}env/bin/python${python_version} ${basename}project/manage.py runserver 0.0.0.0:8000 &",
                 require     => Exec['boh-compilemessages'];
+        }
+    }
+
+    if $create_superuser == 'true' {
+        exec {
+            'create-superuser':
+                command => "echo \"from django.contrib.auth.models import User; User.objects.create_superuser('${superuser_email}', '${superuser_name}', '${superuser_password}')\" | ${basename}env/bin/python${python_version} ${basename}project/manage.py shell",
+                require => Exec['boh-start'];
         }
     }
 
