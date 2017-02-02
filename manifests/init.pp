@@ -148,6 +148,7 @@ class boh(
 
         'boh-checksum':
             command => "/bin/bash -c \"export CHK=\$(/usr/bin/md5sum ${tarball}|/usr/bin/cut -d' ' -f1); if ['\$CHK' == '${pkg_checksum}'; then /bin/echo 0; else /bin/echo 1;fi\"",
+            logoutput => on_failure,
             require => Exec['boh-download'];
 
         'boh-unpack':
