@@ -147,7 +147,7 @@ class boh(
             creates => $tarball;
 
         'boh-checksum':
-            command => "export CHK=\$(md5sum ${tarball}|cut -d' ' -f1); if [\"\$CHK\" == \"${pkg_checksum}\"; then echo 0; else echo 1;fi",
+            command => "export CHK=\$(/usr/bin/md5sum ${tarball}|/usr/bin/cut -d' ' -f1); if [\"\$CHK\" == \"${pkg_checksum}\"; then /bin/echo 0; else /bin/echo 1;fi",
             require => Exec['boh-download'];
 
         'boh-unpack':
