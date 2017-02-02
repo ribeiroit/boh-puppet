@@ -197,7 +197,7 @@ class boh(
     if $environment == 'dev' {
         exec {
             'boh-start':
-                command => "${basename}env/bin/django-admin.py runserver --settings=project.settings.${environment}",
+                command => "/bin/bash -c \"export DJANGO_SETTINGS_MODULE='project.settings.${environment}';${basename}env/bin/python${python_version} runserver\"",
                 require => Exec['boh-migrate'];
         }
     }
