@@ -198,7 +198,7 @@ class boh(
         exec {
             'boh-start':
                 environment => ["DJANGO_SETTINGS_MODULE='project.settings.${environment}'"],
-                command     => "${basename}project/manage.py runserver",
+                command     => "${basename}env/bin/python${python_version} ${basename}project/manage.py runserver",
                 require     => Exec['boh-compilemessages'];
         }
     }
