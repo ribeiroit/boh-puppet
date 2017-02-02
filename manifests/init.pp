@@ -126,36 +126,32 @@ class boh(
         package { $uwsgi3:
             ensure => present,
         }
-    }
+    } ~>
 
     user { $user:
         ensure => present,
         shell  => '/bin/false',
         system => true,
-    }
+    } ~>
 
     file { $basename:
         ensure  => directory,
         owner   => $user,
         group   => $user,
         mode    => '0744',
-    }
+    } ~>
 
     exec {
         'boh-download':
             command => "/usr/bin/curl -L -o $tarball $pkg_url",
             creates => $tarball;
 
-        'boh-checksum':
-            command => "/bin/bash -c \"export CHK=\$(/usr/bin/md5sum ${tarball}|/usr/bin/cut -d' ' -f1); if [ '\$CHK' == '${pkg_checksum}' ]; then /bin/echo 0; else /bin/echo 1;fi\"",
-            logoutput => on_failure,
-            require => Exec['boh-download'];
-
         'boh-unpack':
             command => "/bin/tar xvf ${tarball}",
             creates => $pkg_name,
             cwd     => '/opt',
-            require => Exec['boh-checksum'];
+            onlyif  => "/bin/bash -c \"export CHK=\$(/usr/bin/md5sum ${tarball}|/usr/bin/cut -d' ' -f1); if [ '\$CHK' == '${pkg_checksum}' ]; then /bin/echo 0; else /bin/echo 1;fi\"",
+            require => Exec['boh-download'];
 
         'boh-bind':
             command => "/bin/mount --bind $pkg_name $basename",
@@ -172,7 +168,7 @@ class boh(
         'boh-install-deps':
             command => "${basename}env/bin/pip${python_version} install -r ${basename}requirements/${environment}.txt",
             require => Exec['boh-create-env'];
-    }
+    } ~>
 
     file { $settings:
         ensure  => file,
@@ -180,5 +176,28 @@ class boh(
         group   => $user,
         mode    => '0744',
         content => template('boh/settings.erb'),
+    } ~>
+
+    exec {
+        'boh-makemigrations':
+            command => "${basename}env/bin/python${python_version} ${basename}project/manage.py makemigrations";
+
+        'boh-migrate':
+            command => "${basename}env/bin/python${python_version} ${basename}project/manage.py migrate";
+            require => Exec['boh-makemigrations'];
+    } ~>
+
+    if $language != 'en' {
+        exec {
+            'boh-compilemessages':
+                command => "${basename}env/bin/django-admin.py compilemessages";
+        }
+    } ~>
+
+    if $environment == 'dev' {
+        exec {
+            'boh-start':
+                command => "${basename}env/bin/django-admin.py runserver --settings=project.settings.${environment}"
+        }
     }
 }
