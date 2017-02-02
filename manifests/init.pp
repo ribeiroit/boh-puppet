@@ -204,7 +204,7 @@ class boh(
     }
 
     exec {
-        'boh_env_exec':
+        'boh-env-exec':
             command => '/etc/profile.d/boh.sh',
             require => File['boh_env'];
     }
