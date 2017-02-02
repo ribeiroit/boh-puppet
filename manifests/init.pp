@@ -190,7 +190,7 @@ class boh(
         'boh-compilemessages':
             command => "${basename}env/bin/django-admin.py compilemessages",
             require => Exec['boh-makemigrations'];
-    } ~>
+    }
 
     if $environment == 'dev' {
         exec {
