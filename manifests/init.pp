@@ -139,7 +139,8 @@ class boh(
         owner   => $user,
         group   => $user,
         mode    => '0744',
-    } ->
+        require => User[$user],
+    }
 
     exec {
         'boh-download':
@@ -168,7 +169,7 @@ class boh(
         'boh-install-deps':
             command => "${basename}env/bin/pip${python_version} install -r ${basename}requirements/${environment}.txt",
             require => Exec['boh-create-env'];
-    } ~>
+    }
 
     file { $settings:
         ensure  => file,
@@ -176,12 +177,13 @@ class boh(
         group   => $user,
         mode    => '0744',
         content => template('boh/settings.erb'),
-        after   => 'boh-install-deps',
-    } >
+        require => Exec['boh-install-deps'],
+    }
 
     exec {
         'boh-makemigrations':
-            command => "${basename}env/bin/python${python_version} ${basename}project/manage.py makemigrations";
+            command => "${basename}env/bin/python${python_version} ${basename}project/manage.py makemigrations",
+            require => File[$settings];
 
         'boh-migrate':
             command => "${basename}env/bin/python${python_version} ${basename}project/manage.py migrate",
@@ -189,13 +191,14 @@ class boh(
 
         'boh-compilemessages':
             command => "${basename}env/bin/django-admin.py compilemessages",
-            require => Exec['boh-makemigrations'];
+            require => Exec['boh-migrate'];
     }
 
     if $environment == 'dev' {
         exec {
             'boh-start':
-                command => "${basename}env/bin/django-admin.py runserver --settings=project.settings.${environment}"
+                command => "${basename}env/bin/django-admin.py runserver --settings=project.settings.${environment}",
+                require => Exec['boh-migrate'];
         }
     }
 }
