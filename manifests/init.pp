@@ -183,7 +183,7 @@ class boh(
             command => "${basename}env/bin/python${python_version} ${basename}project/manage.py makemigrations";
 
         'boh-migrate':
-            command => "${basename}env/bin/python${python_version} ${basename}project/manage.py migrate";
+            command => "${basename}env/bin/python${python_version} ${basename}project/manage.py migrate",
             require => Exec['boh-makemigrations'];
     } ~>
 
