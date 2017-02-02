@@ -212,7 +212,7 @@ class boh(
     if $environment == 'dev' {
         exec {
             'boh-start':
-                command     => "${basename}env/bin/python${python_version} ${basename}project/manage.py runserver",
+                command     => "${basename}env/bin/python${python_version} ${basename}project/manage.py runserver &",
                 require     => Exec['boh-env-exec'];
         }
     }
