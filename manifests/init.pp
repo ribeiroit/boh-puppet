@@ -9,6 +9,7 @@ class boh(
     $create_superuser = Enum['true', 'false'],
     $allowed_hosts = ['localhost', '127.0.0.1'],
     $pkg_url = 'https://github.com/ribeiroit/bag-of-holding/archive/translation.tar.gz',
+    $pkg_checksum = '7ddbde7bfedeb34f77894be7a7dea20f',
     $pkg_name = '/opt/bag-of-holding-translation/',
     $tarball = '/opt/boh.tar.gz',
     $superuser_password = 'default',
@@ -145,11 +146,15 @@ class boh(
             command => "/usr/bin/curl -L -o $tarball $pkg_url",
             creates => $tarball;
 
+        'boh-checksum':
+            command => "export CHK=\$(md5sum ${tarball}|cut -d' ' -f1); if [\"\$CHK\" == \"${pkg_checksum}\"; then echo 0; else echo 1;fi",
+            require => Exec['boh-download'];
+
         'boh-unpack':
             command => "/bin/tar xvf ${tarball}",
             creates => $pkg_name,
             cwd     => '/opt',
-            require => Exec['boh-download'];
+            require => Exec['boh-checksum'];
 
         'boh-bind':
             command => "/bin/mount --bind $pkg_name $basename",
