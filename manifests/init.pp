@@ -168,7 +168,7 @@ class boh(
         'boh-install-deps':
             command => "${basename}env/bin/pip${python_version} install -r ${basename}requirements/${environment}.txt",
             require => Exec['boh-create-env'];
-    } ->
+    } ~>
 
     file { $settings:
         ensure  => file,
@@ -177,7 +177,7 @@ class boh(
         mode    => '0744',
         content => template('boh/settings.erb'),
         after   => 'boh-install-deps',
-    } ->
+    } >
 
     exec {
         'boh-makemigrations':
