@@ -185,12 +185,12 @@ class boh(
         'boh-migrate':
             command => "${basename}env/bin/python${python_version} ${basename}project/manage.py migrate",
             require => Exec['boh-makemigrations'];
-    } ~>
+    }
 
     if $language != 'en' {
         exec {
             'boh-compilemessages':
-                command => "${basename}env/bin/django-admin.py compilemessages";
+                command => "${basename}env/bin/django-admin.py compilemessages",
         }
     }
 
