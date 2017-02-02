@@ -25,8 +25,8 @@ class boh(
 ) {
     $settings = "${basename}project/project/settings/${environment}.py"
     $lang = {
-        'en': 'en',
-        'pt-br': 'pt_BR',
+        'en'=> 'en',
+        'pt-br'=> 'pt_BR',
     }
 
     $nginx = $::operatingsystem ? {
