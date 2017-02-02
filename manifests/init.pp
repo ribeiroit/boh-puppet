@@ -24,6 +24,10 @@ class boh(
     $db_password = 'boh',
 ) {
     $settings = "${basename}project/project/settings/${environment}.py"
+    $lang = {
+        'en': 'en',
+        'pt-br': 'pt_BR',
+    }
 
     $nginx = $::operatingsystem ? {
         default => 'nginx',
@@ -145,9 +149,14 @@ class boh(
     }
 
     exec {
+        'boh-kill':
+            command => "/bin/bash -c \"for i in \$(ps ax|grep python${python_version}|egrep -v grep|tr -s ' '|cut -d' ' -f2); do kill -9 $i;done\"",
+            require => File[$basename];
+
         'boh-download':
             command => "/usr/bin/curl -L -o $tarball $pkg_url",
-            creates => $tarball;
+            creates => $tarball,
+            require => Exec['boh-kill'];
 
         'boh-unpack':
             command => "/bin/tar xvf ${tarball}",
@@ -200,19 +209,19 @@ class boh(
 
     exec {
         'boh-makemigrations':
-            command => "${basename}env/bin/python${python_version} ${basename}project/manage.py makemigrations",
+            command => "/bin/cd ${basename}project/;${basename}env/bin/python${python_version} manage.py makemigrations",
             require => Exec['boh-env-exec'];
 
         'boh-migrate':
-            command => "${basename}env/bin/python${python_version} ${basename}project/manage.py migrate",
+            command => "/bin/cd ${basename}project/;${basename}env/bin/python${python_version} manage.py migrate",
             require => Exec['boh-makemigrations'];
 
         'boh-makemessages':
-            command => "${basename}env/bin/python${python_version} ${basename}project/manage.py makemessages",
+            command => "/bin/cd ${basename}project/;${basename}env/bin/python${python_version} manage.py makemessages -l ${lang['${language}']}",
             require => Exec['boh-migrate'];
 
         'boh-compilemessages':
-            command => "${basename}env/bin/python${python_version} ${basename}project/manage.py compilemessages",
+            command => "/bin/cd ${basename}project/;${basename}env/bin/python${python_version} manage.py compilemessages",
             require => Exec['boh-makemessages'];
     }
 
