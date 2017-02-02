@@ -207,9 +207,13 @@ class boh(
             command => "${basename}env/bin/python${python_version} ${basename}project/manage.py migrate",
             require => Exec['boh-makemigrations'];
 
+        'boh-makemessages':
+            command => "${basename}env/bin/python${python_version} ${basename}project/manage.py makemessages",
+            require => Exec['boh-migrate'];
+
         'boh-compilemessages':
             command => "${basename}env/bin/python${python_version} ${basename}project/manage.py compilemessages",
-            require => Exec['boh-migrate'];
+            require => Exec['boh-makemessages'];
     }
 
     if $environment == 'dev' {
